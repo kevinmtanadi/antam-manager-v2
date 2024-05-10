@@ -13,17 +13,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Issue {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255)
-  description String   @db.Text
-  status      Status   @default(OPEN)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @db.VarChar(31)
+  password  String   @db.VarChar(127)
+  salt      String   @db.VarChar(127)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-enum Status {
-  OPEN
-  IN_PROGRESS
-  CLOSED
+model Transaction {
+  id               Int               @id @default(autoincrement())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  transactionItems TransactionItem[]
+}
+
+model Product {
+  id              String            @id @db.VarChar(31)
+  name            String            @db.VarChar(63)
+  weight          Float
+  stocks          Stock[]
+  TransactionItem TransactionItem[]
+}
+
+model Stock {
+  id              String            @id @db.VarChar(31)
+  product         Product           @relation(fields: [productId], references: [id])
+  productId       String
+  cost            Int
+  note            String            @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  TransactionItem TransactionItem[]
+}
+
+model TransactionItem {
+  id            Int               @id @default(autoincrement())
+  transaction   Transaction       @relation(fields: [transactionId], references: [id])
+  transactionId Int
+  product       Product           @relation(fields: [productId], references: [id])
+  productId     String            @db.VarChar(31)
+  stock         Stock             @relation(fields: [stockId], references: [id])
+  stockId       String            @db.VarChar(31)
+  status        TransactionStatus
+  price         Int
+}
+
+enum TransactionStatus {
+  PURCHASE
+  SALE
 }
