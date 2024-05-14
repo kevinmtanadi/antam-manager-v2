@@ -5,7 +5,7 @@ import classname from "classnames";
 import { IconType } from "react-icons";
 import { AiFillHome } from "react-icons/ai";
 import Link from "next/link";
-import { GiHamburgerMenu } from "react-icons/gi";
+import { GiHamburgerMenu, GiPayMoney, GiReceiveMoney } from "react-icons/gi";
 import Logo from "@/public/logo.svg";
 import Image from "next/image";
 import { IoGridOutline } from "react-icons/io5";
@@ -13,10 +13,7 @@ import { TbShoppingBag } from "react-icons/tb";
 import { MdLogout, MdOutlineCreditCard } from "react-icons/md";
 import { LuLayoutGrid, LuScrollText } from "react-icons/lu";
 import { FiUsers } from "react-icons/fi";
-import { BsGrid } from "react-icons/bs";
 import { usePathname } from "next/navigation";
-import { BiCaretLeft } from "react-icons/bi";
-import { FaChevronLeft } from "react-icons/fa";
 import { GoChevronLeft } from "react-icons/go";
 
 interface Tab {
@@ -26,8 +23,29 @@ interface Tab {
 }
 
 const Sidebar = () => {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const currentPath = usePathname();
+
+  const [expandable, setExpandable] = useState(false);
+  useEffect(() => {
+    const threshold = 850;
+    const handleResize = () => {
+      const screenWidth = window.innerWidth;
+
+      setExpandable(screenWidth > threshold);
+      if (screenWidth <= threshold) {
+        setExpanded(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const overviewTabs: Tab[] = [
     {
@@ -41,9 +59,14 @@ const Sidebar = () => {
       target: "/product",
     },
     {
-      label: "Transaksi Baru",
-      icon: MdOutlineCreditCard,
-      target: "/transaction",
+      label: "Pembelian",
+      icon: GiPayMoney,
+      target: "/purchase",
+    },
+    {
+      label: "Penjualan",
+      icon: GiReceiveMoney,
+      target: "/sales",
     },
     {
       label: "Histori Transaksi",
@@ -68,13 +91,16 @@ const Sidebar = () => {
   return (
     <div
       className={classname({
-        "h-screen transition-all border-r overflow-hidden": true,
+        "min-w-[65px] h-screen transition-all border-r overflow-hidden sticky top-0":
+          true,
       })}
     >
       <div className="flex mb-4 border-b py-4 px-3 items-center">
         <button
           className="w-10 h-10 flex justify-center border-2 rounded-md border-amber-500"
-          onClick={() => setExpanded(!expanded)}
+          onClick={() => {
+            expandable && setExpanded(!expanded);
+          }}
         >
           <Image src={Logo} alt="Logo" width={24} height={24} />
         </button>
@@ -107,6 +133,7 @@ const Sidebar = () => {
         <div className="border-b px-3">
           {overviewTabs.map((tab) => (
             <SidebarItem
+              key={tab.target}
               tab={tab}
               active={currentPath === tab.target}
               expanded={expanded}
@@ -126,6 +153,7 @@ const Sidebar = () => {
           <div className="border-b px-3">
             {otherTabs.map((tab) => (
               <SidebarItem
+                key={tab.target}
                 tab={tab}
                 active={currentPath === tab.target}
                 expanded={expanded}
