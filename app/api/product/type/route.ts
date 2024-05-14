@@ -1,6 +1,5 @@
 import prisma from "@/prisma/client"
 import { NextRequest, NextResponse } from "next/server"
-import { bindPathParams } from "../../paramsParser"
 
 export async function GET(request: NextRequest) {
     const types = await prisma.product.findMany({

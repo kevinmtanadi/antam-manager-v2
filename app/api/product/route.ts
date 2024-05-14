@@ -1,11 +1,6 @@
 import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { env } from "process";
 import z from "zod"
-
-const fetchProductSchema = z.object({
-    search: z.string().nullable(),
-})
 
 export async function GET(request: NextRequest) {
     const {searchParams} = new URL(request.url)
