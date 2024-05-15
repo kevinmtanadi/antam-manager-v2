@@ -125,7 +125,7 @@ const Purchase = () => {
         const res = await axios.get("/api/product/type");
         return res.data;
       } catch (error) {
-        alert(error);
+        console.log(error);
       }
     },
   });

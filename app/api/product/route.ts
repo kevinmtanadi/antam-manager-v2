@@ -1,27 +1,36 @@
-import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import z from "zod"
+import { db } from "@/app/db";
+import { log, product, stock } from "@/schema";
+import { asc, eq, ilike, like, or, sql } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
-    const {searchParams} = new URL(request.url)
-    const params = searchParams.get("search")
-
-    const filter = params ? `WHERE p.id LIKE '${params}%' OR p.name LIKE '%${params}%'` : ""
+    const {searchParams: queryParams} = new URL(request.url)
+    const params = queryParams.get("search")
     
-    const products = await prisma.$queryRaw`
-        SELECT
-            p.id,
-            p.name,
-            p.weight,
-            COALESCE(MIN(s.cost), 0) AS min_price,
-            COALESCE(AVG(s.cost), 0)::float AS avg_price,
-            COUNT(s.id)::int AS stock
-        FROM
-            "Product" p
-            LEFT JOIN "Stock" s ON p.id = s."productId"
-        || ${filter}
-        GROUP BY p.id
-        ORDER BY p.weight ASC`
+    
+    let query = db.select({
+        id: product.id,
+        name: product.name,
+        weight: product.weight,
+        min_price: sql`COALESCE(MIN(${stock.cost}), 0)`,
+        avg_price: sql`COALESCE(AVG(${stock.cost}), 0)::float`,
+        stock: sql`COUNT(${stock.id})::int`
+    }).from(product)
+      .leftJoin(stock, eq(product.id, stock.productId))
+      .groupBy(product.id)
+      .orderBy(asc(product.weight)) as any;
+    
+    if (params) {
+        query = query.where(
+            or(
+                ilike(product.name, `%${params}%`),
+                ilike(product.id, `${params}%`)
+            )
+        );
+    }
+    
+    const products = await query
     
      
     return NextResponse.json(products, {status: 200})
@@ -42,13 +51,17 @@ export async function POST(request: NextRequest) {
         })
     }
     
-    const newProduct = await prisma.product.create({
-        data: {
-            id: body.id,
-            name: body.name,
-            weight: body.weight
-        }
+    await db.insert(product).values({
+        id: body.id,
+        name: body.name,
+        weight: body.weight
+    })
+
+    await db.insert(log).values({
+            action: "create",
+            detail: `Membuat produk ${body.id} : ${body.name}`,
+            identifier: body.id
     })
     
-    return NextResponse.json(newProduct, {status: 200})
+    return NextResponse.json({message: "success"}, {status: 200})
 }

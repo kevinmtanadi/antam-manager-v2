@@ -73,11 +73,6 @@ const Sidebar = () => {
       icon: LuScrollText,
       target: "/transaction_history",
     },
-    {
-      label: "Akun",
-      icon: FiUsers,
-      target: "/users",
-    },
   ];
 
   const otherTabs: Tab[] = [
@@ -140,7 +135,7 @@ const Sidebar = () => {
             />
           ))}
         </div>
-        <div>
+        {/* <div>
           <div
             className={classname({
               "mt-4 text-gray-400 ml-3 overflow-hidden transition-all whitespace-nowrap text-xs px-3":
@@ -160,7 +155,7 @@ const Sidebar = () => {
               />
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -1,16 +1,18 @@
-import prisma from "@/prisma/client"
+import { db } from "@/app/db"
+import { product } from "@/schema"
+import { asc } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
-import { bindPathParams } from "../../paramsParser"
 
 export async function GET(request: NextRequest) {
-    const weights = await prisma.product.findMany({
-        select: {
-            weight: true
-        },
-        distinct: ["weight"],
-        orderBy: {
-            weight: "asc"
-        }
-    })
-    return NextResponse.json(weights, {status: 200})
+    try {
+        const weights = await db.selectDistinctOn([product.weight], {
+            weight: product.weight
+        })
+        .from(product)
+        .orderBy(asc(product.weight))
+        
+        return NextResponse.json(weights, {status: 200})
+    } catch(err) {
+        return NextResponse.json(err, {status: 500})
+    }
 }

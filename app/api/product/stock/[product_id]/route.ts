@@ -1,23 +1,19 @@
 import { bindPathParams } from "@/app/api/paramsParser"
-import prisma from "@/prisma/client"
+import { db } from "@/app/db"
+import { product, stock } from "@/schema"
+import { eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
-    const {searchParams: queryParams} = new URL(request.url)
-    const productId = bindPathParams(request)
+    const stockId = bindPathParams(request)
     
-    const stock = await prisma.stock.findFirst({
-        where: {
-            id: productId,
-        },
-        include: {
-            product: true,
-        }
-    })
+    const stockData = await db.select().
+        from(stock)
+        .innerJoin(product, eq(product.id, stock.productId))
+        .where(eq(stock.id, stockId))
+   
 
-    return NextResponse.json({
-        stock,
-    }, {status: 200})
+    return NextResponse.json(stockData, {status: 200})
 
      
 }

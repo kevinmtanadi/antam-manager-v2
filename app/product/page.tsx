@@ -2,12 +2,16 @@
 
 import {
   Button,
+  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
   Input,
   Pagination,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectItem,
   Skeleton,
@@ -20,7 +24,7 @@ import {
   TableRow,
   useDisclosure,
 } from "@nextui-org/react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useState } from "react";
 import CreateProductModal from "./CreateProductModal";
@@ -28,6 +32,14 @@ import { formatDate, formatRupiah } from "../helper";
 import { BiSearch } from "react-icons/bi";
 import { PlusIcon } from "@/icons/PlusIcon";
 import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
+import { EyeIcon } from "@/icons/EyeIcon";
+import { EditIcon } from "@/icons/EditIcon";
+import { DeleteIcon } from "@/icons/DeleteIcon";
+import { toast } from "react-toastify";
+import DeleteProductModal from "./DeleteProductModal";
+import EditProductModal from "./EditProductModal";
+import { LuCopy } from "react-icons/lu";
+import DetailProductModal from "./DetailProductModal";
 
 interface ProductObj {
   name: string;
@@ -72,12 +84,33 @@ const Product = () => {
         });
         return res.data;
       } catch (error) {
-        alert(error);
+        console.log(error);
       }
     },
   });
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isCreateOpen,
+    onOpen: onCreateOpen,
+    onOpenChange: onCreateOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isDetailOpen,
+    onOpen: onDetailOpen,
+    onOpenChange: onDetailOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onOpenChange: onDeleteOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isEditOpen,
+    onOpen: onEditOpen,
+    onOpenChange: onEditOpenChange,
+  } = useDisclosure();
+
+  const [id, setId] = useState<string>("");
 
   const headers = [
     {
@@ -109,12 +142,7 @@ const Product = () => {
 
   const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  const [weightList, setWeightList] = useState([
-    {
-      value: 0,
-      label: "Semua",
-    },
-  ]);
+  const [weightList, setWeightList] = useState<any[]>([]);
   const {} = useQuery({
     queryKey: ["weights"],
     queryFn: async () => {
@@ -128,11 +156,16 @@ const Product = () => {
               label: item.weight + " g",
             });
           }
-          console.log(weights);
-          setWeightList([...weightList, ...weights]);
+          setWeightList([
+            {
+              value: 0,
+              label: "Semua",
+            },
+            ...weights,
+          ]);
         })
         .catch((error) => {
-          alert(error);
+          console.log(error);
         });
 
       return;
@@ -159,12 +192,14 @@ const Product = () => {
                     onClear={() => setParams({ ...params, search: "" })}
                     onValueChange={(e) => setParams({ ...params, search: e })}
                   />
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 items-center">
                     <Select
-                      color="primary"
+                      labelPlacement="outside-left"
+                      label="Berat emas"
+                      variant="bordered"
                       defaultSelectedKeys={[0]}
                       items={weightList}
-                      className="w-36"
+                      className="w-40"
                       onChange={(e) =>
                         setParams({
                           ...params,
@@ -179,7 +214,7 @@ const Product = () => {
                       )}
                     </Select>
                     <Button
-                      onClick={onOpen}
+                      onClick={onCreateOpen}
                       endContent={<PlusIcon fontSize={"1.5rem"} />}
                       className="text-white"
                       color="success"
@@ -208,8 +243,9 @@ const Product = () => {
             }
             bottomContent={
               <div className="w-full flex justify-end">
-                {data?.totalItems && (
+                {data && data?.totalFiltered > 0 && (
                   <Pagination
+                    showControls
                     isCompact
                     total={Math.ceil(
                       data?.totalFiltered / params.rows_per_page
@@ -251,14 +287,32 @@ const Product = () => {
                   </TableRow>
                 ))}
               </TableBody>
-            ) : data?.stocks ? (
+            ) : data?.stocks && data?.stocks.length > 0 ? (
               <TableBody>
                 {data.stocks.map((stock) => (
                   <TableRow key={stock.id}>
                     <TableCell>
-                      <Snippet className="text-md h-7 bg-transparent" symbol="">
-                        {stock.id}
-                      </Snippet>
+                      <div className="flex items-center gap-3">
+                        <Popover placement="bottom-start">
+                          <PopoverTrigger>
+                            <Button
+                              onClick={() =>
+                                navigator.clipboard.writeText(stock.id)
+                              }
+                              className="bg-transparent h-7 w-7 min-w-10 p-0"
+                              variant="light"
+                            >
+                              <LuCopy id={stock.id} />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <div className="px-1 py-2">
+                              <div className="text-sm font-bold">Copied</div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                        <div>{stock.id}</div>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
@@ -271,7 +325,7 @@ const Product = () => {
                     <TableCell>{stock.product.weight} g</TableCell>
                     <TableCell>{formatRupiah(stock.cost)}</TableCell>
                     <TableCell>
-                      {formatDate(stock.createdAt, "dd-mm-yyyy")}
+                      {formatDate(stock.createdAt, "dd mmm yyyy")}
                     </TableCell>
                     <TableCell>
                       <div className="relative flex justify-end items-center gap-2">
@@ -287,9 +341,41 @@ const Product = () => {
                             </Button>
                           </DropdownTrigger>
                           <DropdownMenu>
-                            <DropdownItem>View</DropdownItem>
-                            <DropdownItem>Edit</DropdownItem>
-                            <DropdownItem>Delete</DropdownItem>
+                            <DropdownItem
+                              onClick={() => {
+                                setId(stock.id);
+                                onDetailOpen();
+                              }}
+                              startContent={
+                                <EyeIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
+                              }
+                            >
+                              View Detail
+                            </DropdownItem>
+                            <DropdownItem
+                              showDivider
+                              startContent={
+                                <EditIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
+                              }
+                              onClick={() => {
+                                setId(stock.id);
+                                onEditOpen();
+                              }}
+                            >
+                              Edit
+                            </DropdownItem>
+                            <DropdownItem
+                              className="text-red-500"
+                              startContent={
+                                <DeleteIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
+                              }
+                              onClick={() => {
+                                setId(stock.id);
+                                onDeleteOpen();
+                              }}
+                            >
+                              Delete
+                            </DropdownItem>
                           </DropdownMenu>
                         </Dropdown>
                       </div>
@@ -304,9 +390,26 @@ const Product = () => {
         </div>
       </div>
       <CreateProductModal
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        isOpen={isCreateOpen}
+        onOpenChange={onCreateOpenChange}
         onSuccess={rerender}
+      />
+      <DetailProductModal
+        isOpen={isDetailOpen}
+        onOpenChange={onDetailOpenChange}
+        id={id}
+      />
+      <DeleteProductModal
+        isOpen={isDeleteOpen}
+        onOpenChange={onDeleteOpenChange}
+        onSuccess={rerender}
+        id={id}
+      />
+      <EditProductModal
+        isOpen={isEditOpen}
+        onOpenChange={onEditOpenChange}
+        onSuccess={rerender}
+        id={id}
       />
     </div>
   );

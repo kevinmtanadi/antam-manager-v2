@@ -1,4 +1,6 @@
-import prisma from "@/prisma/client"
+import { db } from "@/app/db"
+import { log, product, stock } from "@/schema"
+import { asc, count, eq, ilike, or } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
@@ -8,71 +10,89 @@ export async function GET(request: NextRequest) {
     const rowPerPage = queryParams.get("rows_per_page")
     const weight = queryParams.get("weight")
     
-    const stocks = await prisma.stock.findMany({
-        where: {
-            product: {
-                weight: Number(weight) || undefined,
-            },
-            OR: [
-                {
-                    productId: {
-                        startsWith: params || "",
-                        mode: "insensitive"
-                    }
-                },
-                {
-                    id: {
-                        contains: params || "",
-                        mode: "insensitive"
-                    }
-                },
-            ]
-        },
-        include: {
-            product: {
-                select: {
-                    name: true,
-                    weight: true
-                }
-            }
-        },
-        orderBy: {
-            product: {
-                weight: "asc"
-            }
-        },
-        take: rowPerPage ? Number(rowPerPage) : 10,
-        skip: (Number(page) - 1) * Number(rowPerPage),
-    })
-    
-    const totalItems = await prisma.stock.count({})
-    const totalFiltered = await prisma.stock.count({
-        where: {
-            product: {
-                weight: Number(weight) || undefined,
-            },
-            OR: [
-                {
-                    productId: {
-                        startsWith: params || "",
-                        mode: "insensitive"
-                    }
-                },
-                {
-                    id: {
-                     contains: params || "",
-                        mode: "insensitive"
-                    }
-                }
-            ]
+    let query = db.select({
+        id: stock.id,
+        productId: stock.productId,
+        cost: stock.cost,
+        createdAt: stock.createdAt,
+        updatedAt: stock.updatedAt,
+        product: {
+            name: product.name,
+            weight: product.weight
         }
     })
+    .from(stock)
+    .leftJoin(product, eq(product.id, stock.productId))
+    .orderBy(asc(product.weight))
+    .limit(rowPerPage ? Number(rowPerPage) : 10)
+    .offset((Number(page) - 1) * Number(rowPerPage)) as any
+    
+    const applyFilter = (query: any) => {
+        if (params) {
+            query = query.where(
+                or(
+                    ilike(product.name, `%${params}%`),
+                    ilike(product.id, `${params}%`)
+                )
+            );
+        }
+        if (weight) {
+            query = query.where(eq(product.weight, Number(weight)))
+        }
+        
+        return query
+    }
+    
+    const stocks = await applyFilter(query)
+    
+    const totalItems = await db.select({
+        count: count()   
+    }).from(stock)
+    
+    const totalFilteredQuery = db.select({
+        count: count()
+    }).from(stock)
+    const totalFiltered = await applyFilter(totalFilteredQuery)
      
     return NextResponse.json({
         stocks,
-        totalItems,
-        totalFiltered
+        totalItems: totalItems[0].count,
+        totalFiltered: totalFiltered[0].count
     }, {status: 200})
+}
 
-     
+
+export async function DELETE(request: NextRequest) {
+    const { searchParams: queryParams } = new URL(request.url)
+    const stockId = queryParams.get('id')
+    if (stockId === "" || !stockId) {
+        return NextResponse.json({
+            message: "Product ID is required",
+        }, {status: 400})
+    }
+    
+    await db.delete(stock).where(eq(stock.id, stockId))
+    
+    await db.insert(log).values({
+        action: "delete",
+        detail: `Menghapus produk stok ${stock.id}`,
+        identifier: stockId
+    })
+    
+    return NextResponse.json(stock, {status: 200})
+}
+
+export async function PUT(request: NextRequest) {
+    const body = await request.json()
+    
+    const id = body.id
+    
+    const updatedStock = await db.update(stock).set({
+        id: body.newId,
+        productId: body.productId,
+        cost: body.cost
+    }).where(eq(stock.id, id))
+    
+    
+    return NextResponse.json(updatedStock, {status: 200})
 }
