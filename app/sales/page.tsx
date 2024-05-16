@@ -157,7 +157,7 @@ const Sales = () => {
   };
 
   return (
-    <div className="mt-7 min-w-[600px] flex justify-center">
+    <div className="mt-7 flex justify-center">
       <div className="grid grid-cols-1 gap-4 w-full">
         <div className="flex w-full gap-4">
           <DatePicker

@@ -8,7 +8,7 @@ export const product = pgTable('product', {
 
 export const stock = pgTable('stock', {
     id: varchar('id', { length: 31 }).primaryKey(),
-    productId: varchar('product_id', { length: 31 }).notNull().references(() => product.id),
+    productId: varchar('product_id', { length: 31 }).notNull().references(() => product.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     cost: integer('cost').notNull(),
     createdAt: timestamp('created_at', {withTimezone: true}).defaultNow(),
     updatedAt : timestamp('updated_at', {withTimezone: true}).defaultNow().$onUpdate(() => new Date()).notNull(),
@@ -37,8 +37,8 @@ export const transaction = pgTable('transaction', {
 export const transactionItem = pgTable('transaction_item', {
     id: serial('id').notNull().primaryKey(),
     transactionId : varchar('transaction_id', { length: 31 }).notNull().references(() => transaction.id),
-    productId: varchar('product_id', { length: 31 }).notNull().references(() => product.id, {onUpdate: 'cascade'}),
-    stockId: varchar('stock_id', { length: 31 }).notNull().references(() => stock.id, {onUpdate: 'cascade'}),
+    productId: varchar('product_id', { length: 31 }).notNull(),
+    stockId: varchar('stock_id', { length: 31 }).notNull(),
     price: integer('price').notNull()
 }, (table) => {
     return {

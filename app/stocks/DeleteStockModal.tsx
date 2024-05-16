@@ -26,8 +26,8 @@ interface Props {
   onSuccess?: () => void;
   id: string;
 }
-const DeleteProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
-  const { mutateAsync: deleteProduct } = useMutation({
+const DeleteStockModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
+  const { mutateAsync: deleteStock } = useMutation({
     mutationFn: async (id: string) => {
       await axios
         .delete(`/api/product/stock`, { params: { id: id } })
@@ -42,10 +42,10 @@ const DeleteProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
   });
 
   const handleDelete = (id: string) => {
-    toast.promise(deleteProduct(id), {
-      pending: "Menghapus produk...",
-      success: "Produk dihapus",
-      error: "Produk gagal dihapus",
+    toast.promise(deleteStock(id), {
+      pending: "Menghapus stok...",
+      success: "Stok dihapus",
+      error: "Stok gagal dihapus",
     });
   };
 
@@ -64,7 +64,7 @@ const DeleteProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader>Hapus stok</ModalHeader>
+              <ModalHeader>Hapus Stok</ModalHeader>
               <ModalBody>
                 <p>
                   Apakah Anda yakin ingin menghapus stok <b>{id}</b>? Data stok
@@ -115,4 +115,4 @@ const DeleteProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
   );
 };
 
-export default DeleteProductModal;
+export default DeleteStockModal;

@@ -23,6 +23,7 @@ interface Props {
   onSuccess?: () => void;
 }
 const CreateProductModal = ({ isOpen, onOpenChange, onSuccess }: Props) => {
+  
   const { mutateAsync } = useMutation({
     mutationFn: async (body: { id: string; name: string; weight: number }) => {
       await axios.post("/api/product", body);

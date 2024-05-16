@@ -2,7 +2,6 @@
 
 import {
   Button,
-  Divider,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -15,7 +14,6 @@ import {
   Select,
   SelectItem,
   Skeleton,
-  Snippet,
   Table,
   TableBody,
   TableCell,
@@ -24,22 +22,19 @@ import {
   TableRow,
   useDisclosure,
 } from "@nextui-org/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useState } from "react";
-import CreateProductModal from "./CreateProductModal";
 import { formatDate, formatRupiah } from "../helper";
 import { BiSearch } from "react-icons/bi";
-import { PlusIcon } from "@/icons/PlusIcon";
 import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
 import { EyeIcon } from "@/icons/EyeIcon";
 import { EditIcon } from "@/icons/EditIcon";
 import { DeleteIcon } from "@/icons/DeleteIcon";
-import { toast } from "react-toastify";
-import DeleteProductModal from "./DeleteProductModal";
-import EditProductModal from "./EditProductModal";
+import DeleteStockModal from "./DeleteStockModal";
+import EditStockModal from "./EditStockModal";
 import { LuCopy } from "react-icons/lu";
-import DetailProductModal from "./DetailProductModal";
+import DetailStockModal from "./DetailStockModal";
 
 interface ProductObj {
   name: string;
@@ -67,7 +62,7 @@ interface FetchStockData {
   totalFiltered: number;
 }
 
-const Product = () => {
+const Stock = () => {
   const [r, setR] = useState(0);
   const rerender = () => setR(r + 1);
   const [params, setParams] = useState<FetchStockParams>({
@@ -89,11 +84,6 @@ const Product = () => {
     },
   });
 
-  const {
-    isOpen: isCreateOpen,
-    onOpen: onCreateOpen,
-    onOpenChange: onCreateOpenChange,
-  } = useDisclosure();
   const {
     isOpen: isDetailOpen,
     onOpen: onDetailOpen,
@@ -213,14 +203,6 @@ const Product = () => {
                         </SelectItem>
                       )}
                     </Select>
-                    <Button
-                      onClick={onCreateOpen}
-                      endContent={<PlusIcon fontSize={"1.5rem"} />}
-                      className="text-white"
-                      color="success"
-                    >
-                      Tambah Produk
-                    </Button>
                   </div>
                 </div>
                 <div className="flex justify-end items-center">
@@ -389,23 +371,19 @@ const Product = () => {
           </Table>
         </div>
       </div>
-      <CreateProductModal
-        isOpen={isCreateOpen}
-        onOpenChange={onCreateOpenChange}
-        onSuccess={rerender}
-      />
-      <DetailProductModal
+
+      <DetailStockModal
         isOpen={isDetailOpen}
         onOpenChange={onDetailOpenChange}
         id={id}
       />
-      <DeleteProductModal
+      <DeleteStockModal
         isOpen={isDeleteOpen}
         onOpenChange={onDeleteOpenChange}
         onSuccess={rerender}
         id={id}
       />
-      <EditProductModal
+      <EditStockModal
         isOpen={isEditOpen}
         onOpenChange={onEditOpenChange}
         onSuccess={rerender}
@@ -415,4 +393,4 @@ const Product = () => {
   );
 };
 
-export default Product;
+export default Stock;

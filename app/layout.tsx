@@ -22,8 +22,10 @@ export default function RootLayout({
         <Providers>
           <main className="flex w-full">
             <Sidebar />
-            <div className="w-8/12 sm:w-10/12 max-w-5xl mx-auto">
-              <div className="mx-auto">{children}</div>
+            <div className="ml-[65px] flex w-full justify-center">
+              <div className="max-w-[1000px] w-11/12">
+                <div className="mx-auto">{children}</div>
+              </div>
             </div>
           </main>
         </Providers>

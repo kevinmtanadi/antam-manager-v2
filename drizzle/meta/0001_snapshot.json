@@ -1,6 +1,6 @@
 {
-  "id": "f0443e5b-1347-4714-860c-2f8f5a843844",
-  "prevId": "9b769070-3342-49db-9d5b-4b91f0faa122",
+  "id": "92895a98-4350-4352-9a22-17c10eb089e1",
+  "prevId": "7a5f76eb-88bb-4e8a-bd17-09607b812258",
   "version": "6",
   "dialect": "postgresql",
   "tables": {
@@ -136,8 +136,8 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},
@@ -258,32 +258,6 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
-        },
-        "transaction_item_product_id_product_id_fk": {
-          "name": "transaction_item_product_id_product_id_fk",
-          "tableFrom": "transaction_item",
-          "tableTo": "product",
-          "columnsFrom": [
-            "product_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "cascade"
-        },
-        "transaction_item_stock_id_stock_id_fk": {
-          "name": "transaction_item_stock_id_stock_id_fk",
-          "tableFrom": "transaction_item",
-          "tableTo": "stock",
-          "columnsFrom": [
-            "stock_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "cascade"
         }
       },
       "compositePrimaryKeys": {},

@@ -65,3 +65,41 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({message: "success"}, {status: 200})
 }
+
+export async function PUT(request: NextRequest) {
+    const body = await request.json()
+    
+    await db.update(product).set({
+        id: body.newId,
+        name: body.name,
+        weight: body.weight
+    }).where(eq(product.id, body.id))
+    
+    await db.insert(log).values({
+        action: "update",
+        detail: `Mengupdate produk ${body.id} : ${body.name}`,
+        identifier: body.id
+    })
+    
+    return NextResponse.json({message: "success"}, {status: 200})
+}
+
+export async function DELETE(request: NextRequest) {
+    const { searchParams: queryParams } = new URL(request.url)
+    const productId = queryParams.get('id')
+    if (productId === "" || !productId) {
+        return NextResponse.json({
+            message: "Product ID is required",
+        }, {status: 400})
+    }
+    
+    await db.delete(product).where(eq(product.id, productId))
+    
+    await db.insert(log).values({
+        action: "delete",
+        detail: `Menghapus produk ${productId}`,
+        identifier: productId
+    })
+    
+    return NextResponse.json({message: "success"}, {status: 200})
+}

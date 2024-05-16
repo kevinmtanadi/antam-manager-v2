@@ -29,10 +29,11 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
     mutationFn: async (body: {
       id: string;
       newId?: string;
+      name: string;
       productId?: string;
-      cost?: number;
+      weight: number;
     }) => {
-      await axios.put("/api/product/stock", body);
+      await axios.put("/api/product", body);
     },
     onSuccess: () => {
       onOpenChange();
@@ -45,8 +46,8 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
       mutateAsync({
         id: id,
         newId: values.newId,
-        productId: values.productId,
-        cost: values.cost,
+        name: values.name,
+        weight: values.weight,
       }),
       {
         pending: "Mengupdate produk...",
@@ -59,16 +60,19 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
   const formik = useFormik({
     initialValues: {
       newId: "",
-      productId: "",
-      cost: 0,
+      name: "",
+      weight: 0,
     },
     onSubmit: (values) => handleEditProduct(values),
   });
 
-  const { data: stockDetail, isLoading } = useQuery({
-    queryKey: ["stock", id],
+  const { data: productDetail, isLoading } = useQuery({
+    queryKey: ["product", id],
     queryFn: async () => {
-      const res = await axios.get(`/api/product/stock/${id}`);
+      if (!id || id === "") {
+        return;
+      }
+      const res = await axios.get(`/api/product/${id}`);
       return res.data;
     },
   });
@@ -76,34 +80,22 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
   useEffect(() => {
     formik.setValues({
       newId: "",
-      productId: "",
-      cost: 0,
+      name: "",
+      weight: 0,
     });
-  }, [isOpen]);
+  }, [isOpen, formik]);
 
   useEffect(() => {
-    if (!isLoading && stockDetail) {
+    if (!isLoading && productDetail && id) {
       formik.setValues({
-        newId: stockDetail[0].stock.id,
-        productId: stockDetail[0].stock.productId,
-        cost: stockDetail[0].stock.cost,
+        newId: productDetail.product.id,
+        name: productDetail.product.name,
+        weight: productDetail.product.weight,
       });
     }
-  }, [stockDetail, isLoading]);
+  }, [productDetail, isLoading, formik]);
 
-  const { data: types } = useQuery({
-    queryKey: ["types"],
-    queryFn: async () => {
-      try {
-        const res = await axios.get("/api/product/type");
-        return res.data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
-
-  if (!id || !isOpen) {
+  if (!id) {
     return <></>;
   }
 
@@ -116,10 +108,6 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
               {isLoading && <OverlaySpinner />}
               <ModalHeader>Update Produk</ModalHeader>
               <ModalBody>
-                <p className="bg-amber-400 text-white p-3 rounded-lg">
-                  <b>Peringatan:</b> mengupdate data stok tidak akan memengaruhi
-                  data transaksi
-                </p>
                 <Input
                   isDisabled={isLoading}
                   value={formik.values.newId}
@@ -127,35 +115,30 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
                   name="newId"
                   radius="sm"
                   autoFocus
-                  label="Kode Stok"
+                  label="Kode Produk"
                   variant="bordered"
                 />
-                <select
-                  disabled={isLoading}
-                  name="productId"
-                  className="p-3 rounded-lg bg-transparent border-2 shadow-sm focus:border-black hover:border-gray-400"
-                  value={formik.values.productId}
+                <Input
+                  isDisabled={isLoading}
+                  value={formik.values.name}
                   onChange={formik.handleChange}
-                >
-                  {types?.map((type: any) => (
-                    <option
-                      className="font-sans bg-transparent text-black"
-                      key={type.id}
-                      value={type.id}
-                    >
-                      {type.name}
-                    </option>
-                  ))}
-                </select>
+                  name="name"
+                  radius="sm"
+                  autoFocus
+                  label="Nama Produk"
+                  variant="bordered"
+                />
                 <Input
                   isDisabled={isLoading}
                   type="number"
                   radius="sm"
-                  label="Harga Beli"
+                  label="Berat"
                   variant="bordered"
-                  name="cost"
-                  value={String(formik.values.cost)}
+                  name="weight"
+                  value={String(formik.values.weight)}
                   onChange={formik.handleChange}
+                  validate={undefined}
+                  isInvalid={false}
                 />
               </ModalBody>
               <ModalFooter>

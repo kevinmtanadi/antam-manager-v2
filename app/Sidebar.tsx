@@ -11,7 +11,7 @@ import Image from "next/image";
 import { IoGridOutline } from "react-icons/io5";
 import { TbShoppingBag } from "react-icons/tb";
 import { MdLogout, MdOutlineCreditCard } from "react-icons/md";
-import { LuLayoutGrid, LuScrollText } from "react-icons/lu";
+import { LuHome, LuLayoutGrid, LuScrollText } from "react-icons/lu";
 import { FiUsers } from "react-icons/fi";
 import { usePathname } from "next/navigation";
 import { GoChevronLeft } from "react-icons/go";
@@ -26,37 +26,21 @@ const Sidebar = () => {
   const [expanded, setExpanded] = useState(false);
   const currentPath = usePathname();
 
-  const [expandable, setExpandable] = useState(false);
-  useEffect(() => {
-    const threshold = 850;
-    const handleResize = () => {
-      const screenWidth = window.innerWidth;
-
-      setExpandable(screenWidth > threshold);
-      if (screenWidth <= threshold) {
-        setExpanded(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    handleResize();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   const overviewTabs: Tab[] = [
     {
       label: "Dashboard",
-      icon: LuLayoutGrid,
+      icon: LuHome,
       target: "/",
     },
     {
-      label: "Produk & Stok",
+      label: "Produk",
+      icon: LuLayoutGrid,
+      target: "/products",
+    },
+    {
+      label: "Stok",
       icon: TbShoppingBag,
-      target: "/product",
+      target: "/stocks",
     },
     {
       label: "Pembelian",
@@ -86,15 +70,15 @@ const Sidebar = () => {
   return (
     <div
       className={classname({
-        "min-w-[65px] h-screen transition-all border-r overflow-hidden sticky top-0":
+        "bg-white fixed top-0 min-w-[65px] h-screen transition-all border-r overflow-hidden z-50":
           true,
       })}
     >
       <div className="flex mb-4 border-b py-4 px-3 items-center">
         <button
-          className="w-10 h-10 flex justify-center border-2 rounded-md border-amber-500"
+          className="min-w-[40px] min-h-[40px] w-10 h-10 flex justify-center border-2 rounded-md border-amber-500"
           onClick={() => {
-            expandable && setExpanded(!expanded);
+            setExpanded(!expanded);
           }}
         >
           <Image src={Logo} alt="Logo" width={24} height={24} />

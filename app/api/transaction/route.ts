@@ -109,9 +109,9 @@ export async function POST(request: NextRequest) {
         const transactionId = `TR${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`
     
         const result = await db.transaction(async (tx) => {
-            const createdAt = new Date(body.createdAt)
-            
             try {
+                const createdAt = new Date(body.createdAt)
+            
                 const tr = await tx.insert(transaction).values({
                     id: transactionId,
                     totalPrice: totalPrice,
@@ -149,7 +149,6 @@ export async function POST(request: NextRequest) {
             
                 await tx.insert(transactionItem).values(transactionItems.map((item) => {
                     return {
-                        id: item.stockId,
                         transactionId: tr[0].id,
                         productId: item.productId,
                         stockId: item.stockId,

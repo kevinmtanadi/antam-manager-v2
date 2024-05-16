@@ -30,7 +30,7 @@ interface Props {
   onOpenChange: () => void;
   id: string;
 }
-const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
+const DetailStockModal = ({ isOpen, onOpenChange, id }: Props) => {
   const { data: stockDetail, isLoading } = useQuery({
     queryKey: ["stock", id],
     queryFn: async () => {
@@ -42,7 +42,7 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
     },
   });
 
-  if (!id || !isOpen) {
+  if (!id) {
     return <></>;
   }
   return (
@@ -52,7 +52,7 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
           {(onClose) => (
             <>
               {isLoading && <OverlaySpinner />}
-              <ModalHeader>Detail Produk</ModalHeader>
+              <ModalHeader>Detail Stok</ModalHeader>
               <ModalBody>
                 <Table removeWrapper radius="none" hideHeader isStriped>
                   <TableHeader>
@@ -136,4 +136,4 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
   );
 };
 
-export default DetailProductModal;
+export default DetailStockModal;
