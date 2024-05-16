@@ -69,21 +69,10 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
   const { data: productDetail, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
-      if (!id || id === "") {
-        return;
-      }
       const res = await axios.get(`/api/product/${id}`);
       return res.data;
     },
   });
-
-  useEffect(() => {
-    formik.setValues({
-      newId: "",
-      name: "",
-      weight: 0,
-    });
-  }, [isOpen, formik]);
 
   useEffect(() => {
     if (!isLoading && productDetail && id) {
@@ -93,7 +82,7 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
         weight: productDetail.product.weight,
       });
     }
-  }, [productDetail, isLoading, formik]);
+  }, [productDetail, isLoading, id]);
 
   if (!id) {
     return <></>;

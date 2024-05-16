@@ -22,11 +22,9 @@ import { DeleteIcon } from "@/icons/DeleteIcon";
 import { EditIcon } from "@/icons/EditIcon";
 import { EyeIcon } from "@/icons/EyeIcon";
 import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
-import { product, stock } from "@/schema";
 import DeleteProductModal from "./DeleteProductModal";
 import EditProductModal from "./EditProductModal";
 import DetailProductModal from "./DetailProductModal";
-import { ToastContainer } from "react-toastify";
 
 const Products = () => {
   const { data: products, isLoading } = useQuery<any[]>({
@@ -37,6 +35,7 @@ const Products = () => {
         return res.json();
       } catch (error) {
         console.log(error);
+        return null;
       }
     },
   });

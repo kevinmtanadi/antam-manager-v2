@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
     const page = queryParams.get("page")
     const rowPerPage = queryParams.get("rows_per_page")
     const weight = queryParams.get("weight")
+    const productId = queryParams.get("productId")
     
     let query = db.select({
         id: stock.id,
@@ -38,6 +39,9 @@ export async function GET(request: NextRequest) {
         }
         if (weight) {
             query = query.where(eq(product.weight, Number(weight)))
+        }
+        if (productId && productId !== "") {
+            query = query.where(eq(stock.productId, productId))   
         }
         
         return query

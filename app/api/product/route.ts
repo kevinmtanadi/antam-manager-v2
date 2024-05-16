@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
     const {searchParams: queryParams} = new URL(request.url)
     const params = queryParams.get("search")
     
-    
     let query = db.select({
         id: product.id,
         name: product.name,

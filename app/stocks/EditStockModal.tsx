@@ -73,22 +73,14 @@ const EditStockModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
   });
 
   useEffect(() => {
-    formik.setValues({
-      newId: "",
-      productId: "",
-      cost: 0,
-    });
-  }, [isOpen, formik]);
-
-  useEffect(() => {
-    if (!isLoading && stockDetail) {
+    if (!isLoading && stockDetail && stockDetail[0]) {
       formik.setValues({
         newId: stockDetail[0].stock.id,
         productId: stockDetail[0].stock.productId,
         cost: stockDetail[0].stock.cost,
       });
     }
-  }, [stockDetail, isLoading, formik]);
+  }, [stockDetail, isLoading]);
 
   const { data: types } = useQuery({
     queryKey: ["types"],

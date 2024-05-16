@@ -38,9 +38,6 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
   const { data: productDetail, isLoading } = useQuery({
     queryKey: ["product", id, "fetch_stock"],
     queryFn: async () => {
-      if (!id || id === "") {
-        return;
-      }
       const res = await axios.get(`/api/product/${id}`, {
         params: {
           fetch_stock: true,
@@ -91,7 +88,7 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
                     <TableColumn>Tanggal Pembelian</TableColumn>
                     <TableColumn>Kode Transaksi</TableColumn>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody emptyContent="Stok Kosong">
                     {productDetail?.stock?.map((stock: any) => (
                       <TableRow key={stock.id}>
                         <TableCell>

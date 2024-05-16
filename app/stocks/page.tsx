@@ -24,7 +24,7 @@ import {
 } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { formatDate, formatRupiah } from "../helper";
 import { BiSearch } from "react-icons/bi";
 import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
@@ -35,6 +35,7 @@ import DeleteStockModal from "./DeleteStockModal";
 import EditStockModal from "./EditStockModal";
 import { LuCopy } from "react-icons/lu";
 import DetailStockModal from "./DetailStockModal";
+import { json } from "stream/consumers";
 
 interface ProductObj {
   name: string;
@@ -54,6 +55,7 @@ interface FetchStockParams {
   weight?: number;
   page: number;
   rows_per_page: number;
+  productId?: string;
 }
 
 interface FetchStockData {
@@ -69,6 +71,7 @@ const Stock = () => {
     search: "",
     page: 1,
     rows_per_page: 10,
+    productId: "",
   });
   const { data, isLoading } = useQuery({
     queryKey: ["stocks", params, r],
@@ -132,35 +135,30 @@ const Stock = () => {
 
   const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-  const [weightList, setWeightList] = useState<any[]>([]);
-  const {} = useQuery({
-    queryKey: ["weights"],
+  const { data: types } = useQuery({
+    queryKey: ["types"],
     queryFn: async () => {
-      await axios
-        .get("/api/product/weight")
-        .then((res) => {
-          const weights = [];
-          for (const item of res.data) {
-            weights.push({
-              value: item.weight,
-              label: item.weight + " g",
-            });
-          }
-          setWeightList([
-            {
-              value: 0,
-              label: "Semua",
-            },
-            ...weights,
-          ]);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      return;
+      try {
+        const res = await axios.get("/api/product/type");
+        return res.data;
+      } catch (error) {
+        console.log(error);
+      }
     },
   });
+
+  const [typeList, setTypeList] = useState<any[]>([]);
+  useEffect(() => {
+    if (!types) return;
+
+    setTypeList([
+      {
+        id: "",
+        name: "Semua",
+      },
+      ...types,
+    ]);
+  }, [types]);
 
   return (
     <div className="mt-7 w-full flex justify-center">
@@ -184,24 +182,26 @@ const Stock = () => {
                   />
                   <div className="flex gap-4 items-center">
                     <Select
-                      labelPlacement="outside-left"
-                      label="Berat emas"
-                      variant="bordered"
-                      defaultSelectedKeys={[0]}
-                      items={weightList}
-                      className="w-40"
-                      onChange={(e) =>
+                      defaultSelectedKeys={[""]}
+                      value={params.productId}
+                      className="bg-transparent text-white text-small w-56"
+                      onChange={(e) => {
                         setParams({
                           ...params,
-                          weight: +e.target.value,
-                        })
-                      }
+                          productId: e.target.value,
+                        });
+                      }}
+                      isRequired
                     >
-                      {(weight: any) => (
-                        <SelectItem key={weight.value} value={weight.value}>
-                          {weight.label}
+                      {typeList.map((type: any) => (
+                        <SelectItem
+                          className="bg-transparent text-black"
+                          key={type.id}
+                          value={type.id}
+                        >
+                          {type.name}
                         </SelectItem>
-                      )}
+                      ))}
                     </Select>
                   </div>
                 </div>

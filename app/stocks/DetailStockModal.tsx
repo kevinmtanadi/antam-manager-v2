@@ -34,9 +34,6 @@ const DetailStockModal = ({ isOpen, onOpenChange, id }: Props) => {
   const { data: stockDetail, isLoading } = useQuery({
     queryKey: ["stock", id],
     queryFn: async () => {
-      if (id === "") {
-        return;
-      }
       const res = await axios.get(`/api/product/stock/${id}`);
       return res.data;
     },
