@@ -138,6 +138,14 @@ const Sales = () => {
   async function getStocks(i: number, productId: string) {
     // IF product is selected and has no selection yet
     if (productId != "") {
+      setItems([
+        ...items.slice(0, i),
+        {
+          ...items[i],
+          isLoading: true,
+        },
+        ...items.slice(i + 1),
+      ]);
       await axios
         .get(`/api/product/${productId}`, {
           params: { fetch_stock: true },
@@ -151,14 +159,13 @@ const Sales = () => {
             (stock: any) => !itemStockIds.has(stock.id)
           );
 
-          console.log(filteredStock);
-
           setItems([
             ...items.slice(0, i),
             {
               ...items[i],
               productId: productId,
               selection: filteredStock,
+              isLoading: false,
             },
             ...items.slice(i + 1),
           ]);
