@@ -199,7 +199,7 @@ const Purchase = () => {
                     <div className="flex flex-col">
                       <Select
                         value={item.productId}
-                        className="bg-transparent text-white text-small"
+                        className="bg-transparent text-default-900 text-small"
                         onChange={(e) => {
                           setItems([
                             ...items.slice(0, idx),
@@ -213,7 +213,7 @@ const Purchase = () => {
                       >
                         {types?.map((type: any) => (
                           <SelectItem
-                            className="bg-transparent text-black"
+                            className="bg-transparent text-default-900"
                             key={type.id}
                             value={type.id}
                           >

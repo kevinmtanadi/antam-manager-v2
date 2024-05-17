@@ -4,17 +4,17 @@ import { asc } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
-    try {
-        const types = await db.select({
-            id: product.id,
-            name: product.name
-        })
-        .from(product)
-        .orderBy(asc(product.weight))
-        
+    const types = await db.select({
+        id: product.id,
+        name: product.name
+    })
+    .from(product)
+    .orderBy(asc(product.weight))
     
-        return NextResponse.json(types, {status: 200})
-    } catch(err) {
-        return NextResponse.json(err, {status: 500})
+    if (!types) {
+        return NextResponse.json({message: "Types not found"}, {status: 404})   
     }
+
+    
+    return NextResponse.json(types, {status: 200})
 }

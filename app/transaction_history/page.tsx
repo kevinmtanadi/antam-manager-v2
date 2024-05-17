@@ -248,7 +248,7 @@ const TransactionHistory = () => {
                     </TableCell>
                     <TableCell>
                       <div className="relative flex justify-end items-center gap-2">
-                        <Dropdown className="bg-background border-1 border-default-200">
+                        <Dropdown className="text-default-900 bg-background border-1 border-default-200">
                           <DropdownTrigger>
                             <Button
                               isIconOnly

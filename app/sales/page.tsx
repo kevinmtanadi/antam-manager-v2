@@ -13,12 +13,13 @@ import {
   TableRow,
   TableCell,
   Button,
-  Input,
   DateValue,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { toast, ToastContainer } from "react-toastify";
 import { formatDate, formatRupiah } from "../helper";
@@ -27,10 +28,16 @@ import "react-toastify/dist/ReactToastify.css";
 
 interface SaleItem {
   stockId: string;
-  product?: product;
+  productId: string;
   cost: number;
   price: number;
   isLoading?: boolean;
+  selection: stock[];
+}
+
+interface stock {
+  id: string;
+  cost: number;
 }
 
 interface product {
@@ -57,9 +64,10 @@ const Sales = () => {
   const [items, setItems] = useState<SaleItem[]>([
     {
       stockId: "",
-      product: undefined,
+      productId: "",
       cost: 0,
       price: 0,
+      selection: [],
     },
   ]);
 
@@ -69,61 +77,15 @@ const Sales = () => {
       {
         stockId: "",
         cost: 0,
-        product: undefined,
+        productId: "",
         price: 0,
+        selection: [],
       },
     ]);
   };
 
   const removeItem = (idx: number) => {
     setItems(items.filter((_, i) => i !== idx));
-  };
-
-  const findItem = async (idx: number) => {
-    const stockId = items[idx].stockId;
-
-    const alreadyExist = !items.some((item) => item.stockId === stockId);
-    if (alreadyExist) {
-      toast.error("Stok sudah ada dalam list");
-    } else {
-      setItems([
-        ...items.slice(0, idx),
-        {
-          ...items[idx],
-          isLoading: true,
-        },
-        ...items.slice(idx + 1),
-      ]);
-
-      await axios
-        .get("/api/product/stock/" + stockId)
-        .then((res) => {
-          const data = res.data[0];
-
-          setItems([
-            ...items.slice(0, idx),
-            {
-              ...items[idx],
-              product: data.product,
-              isLoading: false,
-              cost: data.stock.cost,
-            },
-            ...items.slice(idx + 1),
-          ]);
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error("Stok dengan ID " + stockId + " tidak ditemukan");
-          setItems([
-            ...items.slice(0, idx),
-            {
-              ...items[idx],
-              isLoading: false,
-            },
-            ...items.slice(idx + 1),
-          ]);
-        });
-    }
   };
 
   const { mutateAsync } = useMutation({
@@ -140,13 +102,15 @@ const Sales = () => {
       mutateAsync({
         createdAt: date.toDate(getLocalTimeZone()).toISOString(),
         status: "SALE",
-        items: items.map((item) => {
-          return {
-            productId: item.product?.id || "",
-            stockId: item.stockId,
-            price: item.price,
-          };
-        }),
+        items: items
+          .filter((item) => item.stockId !== "")
+          .map((item) => {
+            return {
+              productId: item.productId || "",
+              stockId: item.stockId,
+              price: item.price,
+            };
+          }),
       }),
       {
         pending: "Memproses transaksi...",
@@ -155,6 +119,55 @@ const Sales = () => {
       }
     );
   };
+
+  const { data: types } = useQuery({
+    queryKey: ["types"],
+    queryFn: async () => {
+      try {
+        const res = await axios.get("/api/product/type");
+        return res.data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
+
+  const [r, setR] = useState(0);
+  const rerender = () => setR(r + 1);
+
+  useEffect(() => {
+    async function getStocks() {
+      for (let i = 0; i < items.length; i++) {
+        // IF product is selected and has no selection yet
+        if (items[i].productId != "") {
+          await axios
+            .get(`/api/product/${items[i].productId}`, {
+              params: { fetch_stock: true },
+            })
+            .then((res) => {
+              let stock = res.data.stock;
+
+              const itemStockIds = new Set(items.map((item) => item.stockId));
+
+              const filteredStock = stock.filter(
+                (stock: any) => !itemStockIds.has(stock.id)
+              );
+
+              setItems([
+                ...items.slice(0, i),
+                {
+                  ...items[i],
+                  selection: filteredStock,
+                },
+                ...items.slice(i + 1),
+              ]);
+            });
+        }
+      }
+    }
+
+    getStocks();
+  }, [r]);
 
   return (
     <div className="mt-7 flex justify-center text-default-900">
@@ -186,9 +199,6 @@ const Sales = () => {
                   className="font-semibold mt-5"
                   color="primary"
                   onClick={handleSale}
-                  isDisabled={
-                    items.length <= 0 || !items.some((item) => item.product)
-                  }
                 >
                   Jual
                 </Button>
@@ -199,9 +209,8 @@ const Sales = () => {
             aria-label="Tabel penjualan"
           >
             <TableHeader>
-              <TableColumn>Kode Item</TableColumn>
               <TableColumn>Produk</TableColumn>
-              <TableColumn>Modal</TableColumn>
+              <TableColumn>Item</TableColumn>
               <TableColumn>Harga</TableColumn>
               <TableColumn> </TableColumn>
             </TableHeader>
@@ -209,43 +218,71 @@ const Sales = () => {
               {items.map((item, idx) => (
                 <TableRow key={idx}>
                   <TableCell width={"35%"}>
-                    <div className="flex gap-2 justify-between">
-                      <Input
-                        isDisabled={item.product ? true : false}
-                        value={item.stockId}
+                    <div className="flex flex-col">
+                      <Select
+                        selectionMode="single"
+                        value={item.productId}
+                        className="bg-transparent text-default-900 text-small"
                         onChange={(e) => {
                           setItems([
                             ...items.slice(0, idx),
-                            {
-                              ...item,
-                              stockId: e.target.value,
-                            },
+                            { ...item, productId: e.target.value },
                             ...items.slice(idx + 1),
                           ]);
+                          rerender();
                         }}
-                      />
-                      <Button
-                        isDisabled={item.product ? true : false}
-                        isLoading={item.isLoading}
-                        color="primary"
-                        className="w-15 min-w-10"
-                        onClick={() => findItem(idx)}
                       >
-                        <BiSearch fontSize={"1.25rem"} />
-                      </Button>
+                        {types?.map((type: any) => (
+                          <SelectItem
+                            className="bg-transparent text-default-900"
+                            key={type.id}
+                            value={type.id}
+                          >
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </Select>
                     </div>
                   </TableCell>
-                  <TableCell width={"25%"}>
+                  <TableCell width={"35%"}>
                     <div className="flex flex-col">
-                      <div className="text-sm">{item.product?.id}</div>
-                      <div className="text-sm text-default-400">
-                        {item.product?.name}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell width={"20%"}>
-                    <div className="flex flex-col">
-                      <div className="text-sm">{formatRupiah(item.cost)}</div>
+                      <Select
+                        value={item.stockId}
+                        isRequired
+                        selectionMode="single"
+                        onChange={(e) => {
+                          setItems([
+                            ...items.slice(0, idx),
+                            { ...item, stockId: e.target.value },
+                            ...items.slice(idx + 1),
+                          ]);
+                          rerender();
+                        }}
+                        className="text-default-900"
+                        defaultSelectedKeys={[0]}
+                      >
+                        {item.selection.length > 0 ? (
+                          item.selection.map((selection: any) => (
+                            <SelectItem
+                              className="bg-transparent text-default-900"
+                              key={selection.id}
+                              value={selection.id}
+                            >
+                              {selection.id +
+                                " - " +
+                                formatRupiah(selection.cost)}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem
+                            className="bg-transparent text-default-900"
+                            key={0}
+                            value={0}
+                          >
+                            Tidak ada produk
+                          </SelectItem>
+                        )}
+                      </Select>
                     </div>
                   </TableCell>
                   <TableCell width={"18%"}>
@@ -290,3 +327,35 @@ const Sales = () => {
 };
 
 export default Sales;
+
+interface Props {
+  productId: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+const ItemSelector = ({ productId, onChange }: Props) => {
+  const { data: stocks } = useQuery({
+    queryKey: ["product", productId],
+    queryFn: async () => {
+      const res = await axios.get(`/api/product/${productId}`);
+      return res.data;
+    },
+  });
+
+  return (
+    <Select
+      isDisabled={productId === ""}
+      className="bg-transparent text-default-900 text-small"
+      onChange={onChange}
+    >
+      {stocks?.map((stock: any) => (
+        <SelectItem
+          className="bg-transparent text-default-900"
+          key={stock.id}
+          value={stock.id}
+        >
+          {stock.id} - {stock.price}
+        </SelectItem>
+      ))}
+    </Select>
+  );
+};
