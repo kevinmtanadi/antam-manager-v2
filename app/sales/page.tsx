@@ -253,7 +253,7 @@ const Sales = () => {
                         className="text-default-900"
                         defaultSelectedKeys={[0]}
                         disabledKeys={[0]}
-                        isLoading={item.isLoading}
+                        isDisabled={item.isLoading}
                       >
                         {item.selection.length > 0 ? (
                           item.selection.map((selection: any) => (
