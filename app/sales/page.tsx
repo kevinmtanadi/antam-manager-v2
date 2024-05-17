@@ -135,39 +135,36 @@ const Sales = () => {
   const [r, setR] = useState(0);
   const rerender = () => setR(r + 1);
 
-  useEffect(() => {
-    async function getStocks() {
-      for (let i = 0; i < items.length; i++) {
-        // IF product is selected and has no selection yet
-        if (items[i].productId != "") {
-          await axios
-            .get(`/api/product/${items[i].productId}`, {
-              params: { fetch_stock: true },
-            })
-            .then((res) => {
-              let stock = res.data.stock;
+  async function getStocks(i: number, productId: string) {
+    // IF product is selected and has no selection yet
+    if (productId != "") {
+      await axios
+        .get(`/api/product/${productId}`, {
+          params: { fetch_stock: true },
+        })
+        .then((res) => {
+          let stock = res.data.stock;
 
-              const itemStockIds = new Set(items.map((item) => item.stockId));
+          const itemStockIds = new Set(items.map((item) => item.stockId));
 
-              const filteredStock = stock.filter(
-                (stock: any) => !itemStockIds.has(stock.id)
-              );
+          const filteredStock = stock.filter(
+            (stock: any) => !itemStockIds.has(stock.id)
+          );
 
-              setItems([
-                ...items.slice(0, i),
-                {
-                  ...items[i],
-                  selection: filteredStock,
-                },
-                ...items.slice(i + 1),
-              ]);
-            });
-        }
-      }
+          console.log(filteredStock);
+
+          setItems([
+            ...items.slice(0, i),
+            {
+              ...items[i],
+              productId: productId,
+              selection: filteredStock,
+            },
+            ...items.slice(i + 1),
+          ]);
+        });
     }
-
-    getStocks();
-  }, [r]);
+  }
 
   return (
     <div className="mt-7 flex justify-center text-default-900">
@@ -224,12 +221,7 @@ const Sales = () => {
                         value={item.productId}
                         className="bg-transparent text-default-900 text-small"
                         onChange={(e) => {
-                          setItems([
-                            ...items.slice(0, idx),
-                            { ...item, productId: e.target.value },
-                            ...items.slice(idx + 1),
-                          ]);
-                          rerender();
+                          getStocks(idx, e.target.value);
                         }}
                       >
                         {types?.map((type: any) => (
@@ -260,6 +252,8 @@ const Sales = () => {
                         }}
                         className="text-default-900"
                         defaultSelectedKeys={[0]}
+                        disabledKeys={[0]}
+                        isLoading={item.isLoading}
                       >
                         {item.selection.length > 0 ? (
                           item.selection.map((selection: any) => (
