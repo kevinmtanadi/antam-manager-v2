@@ -115,12 +115,6 @@ const Sidebar = () => {
           <div className="">
             <ThemeSwitcher expanded={expanded} />
           </div>
-          <div
-            className={classname({
-              "flex my-2 rounded-md p-2.5 hover:text-blue-500 hover:bg-blue-200 transition-colors":
-                true,
-            })}
-          ></div>
         </div>
       </div>
     </div>
