@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
     
     let transactionItems = []
     let totalPrice = 0
+    let profit = 0
     
     switch (body.status) {
         case "PURCHASE":
@@ -97,6 +98,7 @@ export async function POST(request: NextRequest) {
                 })
                 
                 totalPrice += item.price
+                profit += item.price - item.cost
             }
             break
         default:
@@ -115,6 +117,7 @@ export async function POST(request: NextRequest) {
                 const tr = await tx.insert(transaction).values({
                     id: transactionId,
                     totalPrice: totalPrice,
+                    profit: profit,
                     status: transactionStatus.enumValues[body.status === "PURCHASE" ? 0 : 1],
                     createdAt: createdAt
                 }).returning({id: transaction.id})

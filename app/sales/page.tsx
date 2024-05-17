@@ -52,6 +52,7 @@ interface PostTransaction {
   items: {
     productId: string;
     stockId: string;
+    cost: number;
     price: number;
   }[];
 }
@@ -108,6 +109,8 @@ const Sales = () => {
             return {
               productId: item.productId || "",
               stockId: item.stockId,
+              cost:
+                item.selection.find((s) => s.id === item.stockId)?.cost || 0,
               price: item.price,
             };
           }),

@@ -32,6 +32,7 @@ interface TransactionObj {
   id: string;
   createdAt: string;
   status: string;
+  profit: number;
   totalPrice: number;
 }
 
@@ -95,6 +96,10 @@ const TransactionHistory = () => {
     {
       key: "totalPrice",
       label: "Harga",
+    },
+    {
+      key: "profit",
+      label: "Profit",
     },
     {
       key: "action",
@@ -231,6 +236,9 @@ const TransactionHistory = () => {
                     <TableCell>
                       <Skeleton className="h-4 w-full rounded-lg" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-full rounded-lg" />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -246,6 +254,7 @@ const TransactionHistory = () => {
                     <TableCell>
                       {formatRupiah(transaction.totalPrice)}
                     </TableCell>
+                    <TableCell>{formatRupiah(transaction.profit)}</TableCell>
                     <TableCell>
                       <div className="relative flex justify-end items-center gap-2">
                         <Dropdown className="text-default-900 bg-background border-1 border-default-200">
