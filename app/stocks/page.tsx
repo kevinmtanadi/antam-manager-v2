@@ -35,7 +35,6 @@ import DeleteStockModal from "./DeleteStockModal";
 import EditStockModal from "./EditStockModal";
 import { LuCopy } from "react-icons/lu";
 import DetailStockModal from "./DetailStockModal";
-import { json } from "stream/consumers";
 
 interface ProductObj {
   name: string;
@@ -161,7 +160,7 @@ const Stock = () => {
   }, [types]);
 
   return (
-    <div className="mt-7 w-full flex justify-center">
+    <div className="mt-7 w-full flex justify-center text-default-900">
       <div className="grid grid-cols-1 gap-4 w-full">
         <div className="flex w-full gap-4">
           <Table
@@ -311,7 +310,7 @@ const Stock = () => {
                     </TableCell>
                     <TableCell>
                       <div className="relative flex justify-end items-center gap-2">
-                        <Dropdown className="bg-background border-1 border-default-200">
+                        <Dropdown className="border-1 border-default-200 text-default-900">
                           <DropdownTrigger>
                             <Button
                               isIconOnly

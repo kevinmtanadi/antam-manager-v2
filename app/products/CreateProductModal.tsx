@@ -1,8 +1,6 @@
 import {
   Button,
-  Checkbox,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -23,7 +21,6 @@ interface Props {
   onSuccess?: () => void;
 }
 const CreateProductModal = ({ isOpen, onOpenChange, onSuccess }: Props) => {
-  
   const { mutateAsync } = useMutation({
     mutationFn: async (body: { id: string; name: string; weight: number }) => {
       await axios.post("/api/product", body);
@@ -47,7 +44,11 @@ const CreateProductModal = ({ isOpen, onOpenChange, onSuccess }: Props) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        className=" text-default-900"
+      >
         <ModalContent>
           {(onClose) => (
             <Formik

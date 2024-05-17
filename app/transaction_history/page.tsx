@@ -3,12 +3,10 @@
 import {
   Button,
   Chip,
-  DatePicker,
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  getKeyValue,
   Input,
   Pagination,
   Select,
@@ -23,13 +21,11 @@ import {
 } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { formatDate, formatRupiah } from "../helper";
 import { BiSearch } from "react-icons/bi";
-import { parseDate } from "@internationalized/date";
 import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
 import { EyeIcon } from "@/icons/EyeIcon";
-import { EditIcon } from "@/icons/EditIcon";
 import { DeleteIcon } from "@/icons/DeleteIcon";
 
 interface TransactionObj {
@@ -128,7 +124,7 @@ const TransactionHistory = () => {
   };
 
   return (
-    <div className="mt-7 w-full flex justify-center">
+    <div className="mt-7 w-full flex justify-center text-default-900">
       <div className="grid grid-cols-1 gap-4 w-full">
         <div className="flex w-full gap-4">
           <Table

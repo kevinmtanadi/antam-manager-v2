@@ -1,10 +1,8 @@
 import {
   Button,
-  Checkbox,
   Chip,
   Divider,
   Input,
-  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -13,9 +11,8 @@ import {
 } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { Formik } from "formik";
 import React, { useEffect } from "react";
-import { PiWarningCircleBold, PiWarningCircleFill } from "react-icons/pi";
+import { PiWarningCircleBold } from "react-icons/pi";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -60,7 +57,11 @@ const DeleteProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        className="text-default-900"
+      >
         <ModalContent>
           {(onClose) => (
             <>

@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardBody,
   Divider,
-  Table,
   Button,
   useDisclosure,
   Dropdown,
@@ -68,7 +67,7 @@ const Products = () => {
   } = useDisclosure();
 
   return (
-    <div className="mt-7 w-full flex flex-col gap-5 justify-center">
+    <div className="mt-7 w-full flex flex-col gap-5 justify-center text-default-900">
       <div className="w-full flex justify-end">
         <Button
           onClick={onCreateOpen}
@@ -93,7 +92,7 @@ const Products = () => {
                     </div>
                   </div>
                   <div className="relative flex justify-end items-center gap-2">
-                    <Dropdown className="bg-background border-1 border-default-200">
+                    <Dropdown className="border-1 border-default-200 text-default-900">
                       <DropdownTrigger>
                         <Button
                           isIconOnly

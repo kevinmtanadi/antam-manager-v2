@@ -1,9 +1,5 @@
 import OverlaySpinner from "@/component/OverlaySpinner";
 import {
-  Button,
-  Checkbox,
-  Input,
-  Link,
   Modal,
   ModalBody,
   ModalContent,
@@ -16,12 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Formik } from "formik";
-import React, { useEffect } from "react";
+import React from "react";
 
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatDate, formatRupiah } from "../helper";
 
@@ -44,7 +39,11 @@ const DetailStockModal = ({ isOpen, onOpenChange, id }: Props) => {
   }
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        className="text-default-900"
+      >
         <ModalContent>
           {(onClose) => (
             <>

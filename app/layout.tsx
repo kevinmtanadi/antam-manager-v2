@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <main className="flex w-full">
+          <main className="flex w-full bg-default-50 h-screen">
             <Sidebar />
             <div className="ml-[65px] flex w-full justify-center">
               <div className="max-w-[1000px] w-11/12">

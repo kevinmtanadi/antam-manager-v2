@@ -1,7 +1,6 @@
 import OverlaySpinner from "@/component/OverlaySpinner";
 import {
   Button,
-  Chip,
   Input,
   Modal,
   ModalBody,
@@ -90,7 +89,11 @@ const EditProductModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        className="text-default-900"
+      >
         <ModalContent>
           {(onClose) => (
             <form onSubmit={formik.handleSubmit}>

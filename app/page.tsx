@@ -4,7 +4,7 @@ import { GrTransaction } from "react-icons/gr";
 
 export default function Home() {
   return (
-    <div className="mt-10 flex flex-col justify-center">
+    <div className="mt-10 flex flex-col justify-center text-default-900">
       <div className="flex justify-between">
         <h1 className="text-xl font-semibold">Dashboard</h1>
       </div>

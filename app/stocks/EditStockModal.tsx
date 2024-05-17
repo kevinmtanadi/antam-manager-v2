@@ -100,7 +100,11 @@ const EditStockModal = ({ isOpen, onOpenChange, onSuccess, id }: Props) => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        className="text-default-900"
+      >
         <ModalContent>
           {(onClose) => (
             <form onSubmit={formik.handleSubmit}>

@@ -98,8 +98,7 @@ const Sales = () => {
       await axios
         .get("/api/product/stock/" + stockId)
         .then((res) => {
-          const data = res.data.stock;
-          console.log(data);
+          const data = res.data[0];
 
           setItems([
             ...items.slice(0, idx),
@@ -107,12 +106,13 @@ const Sales = () => {
               ...items[idx],
               product: data.product,
               isLoading: false,
-              cost: data.cost,
+              cost: data.stock.cost,
             },
             ...items.slice(idx + 1),
           ]);
         })
         .catch((err) => {
+          console.log(err);
           toast.error("Stok dengan ID " + stockId + " tidak ditemukan");
           setItems([
             ...items.slice(0, idx),
@@ -157,7 +157,7 @@ const Sales = () => {
   };
 
   return (
-    <div className="mt-7 flex justify-center">
+    <div className="mt-7 flex justify-center text-default-900">
       <div className="grid grid-cols-1 gap-4 w-full">
         <div className="flex w-full gap-4">
           <DatePicker
