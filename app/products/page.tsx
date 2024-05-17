@@ -164,15 +164,17 @@ const Products = () => {
                       <p className="text-sm font-semibold">{product.stock}</p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-sm text-default-500">Harga Terendah</p>
+                      <p className="text-sm text-default-500">
+                        Total Nilai Stok
+                      </p>
                       <p className="text-sm font-semibold">
-                        {formatRupiah(product.min_price)}
+                        {formatRupiah(product.total_price)}
                       </p>
                     </div>
                     <div className="flex justify-between">
                       <p className="text-sm text-default-500">Harga Rerata</p>
                       <p className="text-sm font-semibold">
-                        {formatRupiah(product.stock)}
+                        {formatRupiah(product.avg_price)}
                       </p>
                     </div>
                   </div>

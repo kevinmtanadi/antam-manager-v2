@@ -26,7 +26,8 @@ export const transaction = pgTable('transaction', {
     status: transactionStatus('status').notNull(),
     createdAt: timestamp('created_at', {withTimezone: true}).defaultNow(),
     updatedAt : timestamp('updated_at', {withTimezone: true}).defaultNow().$onUpdate(() => new Date()).notNull(),
-    totalPrice: integer('total_price').notNull()
+    totalPrice: integer('total_price').notNull(),
+    profit: integer('profit').default(0)
 }, (table) => {
     return {
         statusIdx: index("status_idx").on(table.status),

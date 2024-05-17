@@ -84,6 +84,7 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
                 <Table radius="sm">
                   <TableHeader>
                     <TableColumn>Kode Stok</TableColumn>
+                    <TableColumn>Harga Per Gram</TableColumn>
                     <TableColumn>Harga Beli</TableColumn>
                     <TableColumn>Tanggal Pembelian</TableColumn>
                     <TableColumn>Kode Transaksi</TableColumn>
@@ -115,6 +116,9 @@ const DetailProductModal = ({ isOpen, onOpenChange, id }: Props) => {
                             </Popover>
                             <div>{stock.id}</div>
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          {formatRupiah(stock.cost / productDetail.weight)}
                         </TableCell>
                         <TableCell>{formatRupiah(stock.cost)}</TableCell>
                         <TableCell>

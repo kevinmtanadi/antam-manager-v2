@@ -119,6 +119,10 @@ const Stock = () => {
       label: "Berat",
     },
     {
+      key: "cost_per_g",
+      label: "Harga per Gram",
+    },
+    {
       key: "cost",
       label: "Harga",
     },
@@ -265,6 +269,9 @@ const Stock = () => {
                     <TableCell>
                       <Skeleton className="h-4 w-full rounded-lg" />
                     </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-full rounded-lg" />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -304,6 +311,9 @@ const Stock = () => {
                       </div>
                     </TableCell>
                     <TableCell>{stock.product.weight} g</TableCell>
+                    <TableCell>
+                      {formatRupiah(stock.cost / stock.product.weight)}
+                    </TableCell>
                     <TableCell>{formatRupiah(stock.cost)}</TableCell>
                     <TableCell>
                       {formatDate(stock.createdAt, "dd mmm yyyy")}

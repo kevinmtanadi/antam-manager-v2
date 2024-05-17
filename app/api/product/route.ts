@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
         id: product.id,
         name: product.name,
         weight: product.weight,
-        min_price: sql`COALESCE(MIN(${stock.cost}), 0)`,
+        total_price: sql`COALESCE(SUM(${stock.cost}), 0)::int`,
         avg_price: sql`COALESCE(AVG(${stock.cost}), 0)::float`,
         stock: sql`COUNT(${stock.id})::int`
     }).from(product)
