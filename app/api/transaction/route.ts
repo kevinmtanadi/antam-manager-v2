@@ -166,16 +166,24 @@ export async function POST(request: NextRequest) {
             }
             
         })
-        
-        await db.insert(log).values({
-            action: "create",
-            detail: `Melakukan transaksi ${body.status === "PURCHASE" ? "pembelian" : "penjualan"} : ${result}`,
-            identifier: result
-        })
+
         
         return NextResponse.json(result, {status: 200})
     } catch (e) {
         return NextResponse.json({message: "Terjadi kendala saat melakukan transaksi", error: e}, {status: 500})
     }
+}
+export async function DELETE(request: NextRequest) {
+    const { searchParams: queryParams } = new URL(request.url)
+    const transactionId = queryParams.get('id')
+    if (transactionId === "" || !transactionId) {
+        return NextResponse.json({
+            message: "Transaction ID is required",
+        }, {status: 400})
+    }
     
+    await db.delete(transactionItem).where(eq(transactionItem.transactionId, transactionId))
+    await db.delete(transaction).where(eq(transaction.id, transactionId))
+
+    return NextResponse.json({message: "success"}, {status: 200})
 }

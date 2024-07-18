@@ -29,6 +29,7 @@ import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
 import { EyeIcon } from "@/icons/EyeIcon";
 import { DeleteIcon } from "@/icons/DeleteIcon";
 import DetailTransactionModal from "./DetailTransactionModal";
+import DeleteTransactionModal from "./DeleteTransactionModal";
 
 interface TransactionObj {
   id: string;
@@ -117,6 +118,11 @@ const TransactionHistory = () => {
     isOpen: isDetailOpen,
     onOpen: onDetailOpen,
     onOpenChange: onDetailOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: isDeleteOpen,
+    onOpen: onDeleteOpen,
+    onOpenChange: onDeleteOpenChange,
   } = useDisclosure();
 
   const renderStatus = (status: string) => {
@@ -269,6 +275,7 @@ const TransactionHistory = () => {
                         <DeleteIcon
                           onClick={() => {
                             setId(transaction.id);
+                            onDeleteOpenChange();
                           }}
                           className="cursor-pointer text-xl text-default-500  flex-shrink-0"
                         />
@@ -286,6 +293,11 @@ const TransactionHistory = () => {
       <DetailTransactionModal
         isOpen={isDetailOpen}
         onOpenChange={onDetailOpenChange}
+        id={id}
+      />
+      <DeleteTransactionModal
+        isOpen={isDeleteOpen}
+        onOpenChange={onDeleteOpenChange}
         id={id}
       />
     </div>
