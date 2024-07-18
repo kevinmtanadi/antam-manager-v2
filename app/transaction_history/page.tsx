@@ -259,40 +259,19 @@ const TransactionHistory = () => {
                     <TableCell>{formatRupiah(transaction.profit)}</TableCell>
                     <TableCell>
                       <div className="relative flex justify-end items-center gap-2">
-                        <Dropdown className="text-default-900 bg-background border-1 border-default-200">
-                          <DropdownTrigger>
-                            <Button
-                              isIconOnly
-                              radius="full"
-                              size="sm"
-                              variant="light"
-                            >
-                              <VerticalDotsIcon className="text-lg text-default-400" />
-                            </Button>
-                          </DropdownTrigger>
-                          <DropdownMenu>
-                            <DropdownItem
-                              showDivider
-                              startContent={
-                                <EyeIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
-                              }
-                              onClick={() => {
-                                setId(transaction.id);
-                                onDetailOpen();
-                              }}
-                            >
-                              View Detail
-                            </DropdownItem>
-                            <DropdownItem
-                              className="text-red-500"
-                              startContent={
-                                <DeleteIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
-                              }
-                            >
-                              Delete
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
+                        <EyeIcon
+                          onClick={() => {
+                            setId(transaction.id);
+                            onDetailOpenChange();
+                          }}
+                          className="cursor-pointer text-xl text-default-500  flex-shrink-0"
+                        />
+                        <DeleteIcon
+                          onClick={() => {
+                            setId(transaction.id);
+                          }}
+                          className="cursor-pointer text-xl text-default-500  flex-shrink-0"
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

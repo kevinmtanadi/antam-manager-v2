@@ -131,8 +131,8 @@ const Stock = () => {
       label: "Tanggal Pembelian",
     },
     {
-      key: "action",
-      label: "",
+      key: "Action",
+      label: "Aksi",
     },
   ];
 
@@ -319,56 +319,28 @@ const Stock = () => {
                       {formatDate(stock.createdAt, "dd mmm yyyy")}
                     </TableCell>
                     <TableCell>
-                      <div className="relative flex justify-end items-center gap-2">
-                        <Dropdown className="border-1 border-default-200 text-default-900">
-                          <DropdownTrigger>
-                            <Button
-                              isIconOnly
-                              radius="full"
-                              size="sm"
-                              variant="light"
-                            >
-                              <VerticalDotsIcon className="text-lg text-default-400" />
-                            </Button>
-                          </DropdownTrigger>
-                          <DropdownMenu>
-                            <DropdownItem
-                              onClick={() => {
-                                setId(stock.id);
-                                onDetailOpen();
-                              }}
-                              startContent={
-                                <EyeIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
-                              }
-                            >
-                              View Detail
-                            </DropdownItem>
-                            <DropdownItem
-                              showDivider
-                              startContent={
-                                <EditIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
-                              }
-                              onClick={() => {
-                                setId(stock.id);
-                                onEditOpen();
-                              }}
-                            >
-                              Edit
-                            </DropdownItem>
-                            <DropdownItem
-                              className="text-red-500"
-                              startContent={
-                                <DeleteIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
-                              }
-                              onClick={() => {
-                                setId(stock.id);
-                                onDeleteOpen();
-                              }}
-                            >
-                              Delete
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </Dropdown>
+                      <div className="flex gap-2">
+                        <EyeIcon
+                          onClick={() => {
+                            setId(stock.id);
+                            onDetailOpenChange();
+                          }}
+                          className="cursor-pointer text-xl text-default-500  flex-shrink-0"
+                        />
+                        <EditIcon
+                          onClick={() => {
+                            setId(stock.id);
+                            onEditOpenChange();
+                          }}
+                          className="cursor-pointer text-xl text-default-500  flex-shrink-0"
+                        />
+                        <DeleteIcon
+                          onClick={() => {
+                            setId(stock.id);
+                            onDeleteOpenChange();
+                          }}
+                          className="cursor-pointer text-xl text-default-500  flex-shrink-0"
+                        />
                       </div>
                     </TableCell>
                   </TableRow>
