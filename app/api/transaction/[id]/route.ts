@@ -7,11 +7,18 @@ import { eq } from "drizzle-orm"
 export async function GET(request: NextRequest) {
     const transactionId = bindPathParams(request)
     
-    const transactionData = await db.select()
+    const transactionDetail = await db.select().from(transaction).where(eq(transaction.id, transactionId)).limit(1)
+    
+    const transactionItems = await db.select({
+        transactionItem
+    })
         .from(transaction)
         .leftJoin(transactionItem, eq(transaction.id, transactionItem.transactionId))
         .where(eq(transaction.id, transactionId))
     
     
-    return NextResponse.json(transactionData, {status: 200})
+    return NextResponse.json({
+        transaction: transactionDetail[0],
+        items: transactionItems.map((item) => item.transactionItem)
+    }, {status: 200})
 }

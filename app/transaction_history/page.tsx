@@ -18,6 +18,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  useDisclosure,
 } from "@nextui-org/react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -27,6 +28,7 @@ import { BiSearch } from "react-icons/bi";
 import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
 import { EyeIcon } from "@/icons/EyeIcon";
 import { DeleteIcon } from "@/icons/DeleteIcon";
+import DetailTransactionModal from "./DetailTransactionModal";
 
 interface TransactionObj {
   id: string;
@@ -80,6 +82,8 @@ const TransactionHistory = () => {
     },
   });
 
+  const [id, setId] = useState("");
+
   const headers = [
     {
       key: "id",
@@ -108,6 +112,12 @@ const TransactionHistory = () => {
   ];
 
   const skeletons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const {
+    isOpen: isDetailOpen,
+    onOpen: onDetailOpen,
+    onOpenChange: onDetailOpenChange,
+  } = useDisclosure();
 
   const renderStatus = (status: string) => {
     switch (status) {
@@ -170,15 +180,7 @@ const TransactionHistory = () => {
                     </SelectItem>
                   </Select>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-default-400 text-small">
-                    Menampilkan {(params.page - 1) * params.rows_per_page + 1} -{" "}
-                    {Math.min(
-                      data?.totalFiltered || 0,
-                      params.page * params.rows_per_page
-                    )}{" "}
-                    dari {data?.totalFiltered}
-                  </span>
+                <div className="flex justify-end items-center">
                   <label className="flex items-center text-default-400 text-small">
                     <span className="mr-2">Rows per page:</span>
                     <select
@@ -274,6 +276,10 @@ const TransactionHistory = () => {
                               startContent={
                                 <EyeIcon color="text-xl text-default-500 pointer-events-none flex-shrink-0" />
                               }
+                              onClick={() => {
+                                setId(transaction.id);
+                                onDetailOpen();
+                              }}
                             >
                               View Detail
                             </DropdownItem>
@@ -298,6 +304,11 @@ const TransactionHistory = () => {
           </Table>
         </div>
       </div>
+      <DetailTransactionModal
+        isOpen={isDetailOpen}
+        onOpenChange={onDetailOpenChange}
+        id={id}
+      />
     </div>
   );
 };
