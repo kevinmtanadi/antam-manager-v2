@@ -79,7 +79,7 @@ const Products = () => {
           Tambah Produk
         </Button>
       </div>
-      <div className="w-full grid gap-5 xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+      <div className="w-full grid gap-5 xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {isLoading ? (
           <div className="col-span-5 text-center">
             <Spinner size="lg" />
