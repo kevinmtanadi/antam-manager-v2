@@ -177,6 +177,12 @@ const Products = () => {
                         {formatRupiah(product.avg_price)}
                       </p>
                     </div>
+                    <div className="flex justify-between">
+                      <p className="text-sm text-default-500">Harga Rerata/gram</p>
+                      <p className="text-sm font-semibold">
+                        {formatRupiah(product.avg_price/product.weight)}
+                      </p>
+                    </div>
                   </div>
                 </CardBody>
               </Card>
