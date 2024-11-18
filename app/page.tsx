@@ -23,6 +23,7 @@ export default function Home() {
       return res.data;
     },
   });
+  
   const { data: transaction, isLoading: isLoadingTransaction } = useQuery({
     queryKey: ["dashboard", "transaction"],
     queryFn: async () => {

@@ -3,6 +3,8 @@ import { db } from "@/app/db";
 import { stock, transaction } from "@/schema";
 import { sql } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
     let query = db.select({
         value: sql`COALESCE(SUM(${transaction.profit}), 0)::float`,

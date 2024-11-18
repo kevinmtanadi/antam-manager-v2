@@ -4,6 +4,7 @@ import { db } from "@/app/db"
 import { product, stock } from "@/schema"
 import { eq } from "drizzle-orm"
 
+
 export async function GET(request: NextRequest) {
     const params = bindPathParams(request)
     if (params === "") {

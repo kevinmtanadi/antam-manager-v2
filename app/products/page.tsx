@@ -12,6 +12,7 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Spinner,
+  Skeleton,
 } from "@nextui-org/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
@@ -25,6 +26,8 @@ import { VerticalDotsIcon } from "@/icons/VerticalDotsIcon";
 import DeleteProductModal from "./DeleteProductModal";
 import EditProductModal from "./EditProductModal";
 import DetailProductModal from "./DetailProductModal";
+import Link from "next/link";
+import axios from "axios";
 
 const Products = () => {
   const { data: products, isLoading } = useQuery<any[]>({
@@ -67,6 +70,14 @@ const Products = () => {
     onOpenChange: onEditOpenChange,
   } = useDisclosure();
 
+  const { data: total_stock, isLoading: isLoadingStock } = useQuery({
+    queryKey: ["dashboard", "stock"],
+    queryFn: async () => {
+      const res = await axios.get("/api/dashboard/total_stock");
+      return res.data;
+    },
+  });
+
   return (
     <div className="mt-7 w-full flex flex-col gap-5 justify-center text-default-900">
       <div className="w-full flex justify-end">
@@ -79,6 +90,20 @@ const Products = () => {
           Tambah Produk
         </Button>
       </div>
+      <Card className="self-start">
+        <CardBody>
+          <div className="flex flex-col p-3 text-center gap-2">
+            <p className="text-sm text-default-500">Jumlah nilai stok</p>
+            {isLoadingStock ? (
+              <Skeleton className="w-32 h-7" />
+            ) : (
+              <p className="text-xl font-bold">
+                {total_stock && formatRupiah(total_stock.value)}
+              </p>
+            )}
+          </div>
+        </CardBody>
+      </Card>
       <div className="w-full grid gap-5 xs:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
         {isLoading ? (
           <div className="col-span-5 text-center">
@@ -178,9 +203,11 @@ const Products = () => {
                       </p>
                     </div>
                     <div className="flex justify-between">
-                      <p className="text-sm text-default-500">Harga Rerata/gram</p>
+                      <p className="text-sm text-default-500">
+                        Harga Rerata/gram
+                      </p>
                       <p className="text-sm font-semibold">
-                        {formatRupiah(product.avg_price/product.weight)}
+                        {formatRupiah(product.avg_price / product.weight)}
                       </p>
                     </div>
                   </div>
