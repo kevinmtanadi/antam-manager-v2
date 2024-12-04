@@ -2,9 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/app/db'
 import { product } from '@/schema'
 
-export const config = {
-  runtime: 'edge',
-}
+export const runtime = "edge"
 
 export default async function GET(req: NextRequest) {
     const types = await db.select({})
