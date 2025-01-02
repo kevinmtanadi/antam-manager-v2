@@ -26,7 +26,7 @@ export const formatDate = (time: string, format?: string): string => {
     format = format.replace('dd', dd);
    }
    if (format.includes('mm') && !format.includes('mmm')) {
-    const mm = date.getMonth().toString().padStart(2, '0');
+    const mm = (date.getMonth() + 1).toString().padStart(2, '0');
     format = format.replace('mm', mm);
    }
    if (format.includes('yy') && !format.includes('yyyy')) {
